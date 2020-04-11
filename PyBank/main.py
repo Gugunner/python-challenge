@@ -44,8 +44,7 @@ def addToChangeList(before: list, after: list):
 with open(csvPath) as csvFile:
     csvreader = csv.reader(csvFile, delimiter=',')
     # advance csv to skip header
-    header = f'Header is: {next(csvreader)}'
-    # print(header)
+    next(csvreader)
     rows = [month for month in csvreader]
     # Use enumerate to get index
     for index, row in enumerate(rows):
@@ -59,13 +58,13 @@ with open(csvPath) as csvFile:
     # Create  all string variable before printing and writing to text file
     totalMonthsResult = f'Total Months: {len(rows)}'
     totalAmountResult = f'Total: ${totalValue}'
-    averageChangeResult = f'Average Change: $''%.2f'%(sum(changeList, 0)/len(changeList))+'\n'
+    averageChangeResult = f'Average Change: $''%.2f'%(sum(changeList, 0)/len(changeList))+'\n '
     greatestIncreaseProfit = f'Greatest Increase in Profits: {greatestProfitMonth} (${greatestProfitValue})'
     greatestDecreaseProfit = f'Greatest Decrease in Profits: {greatestLossMonth} (${greatestLossValue})'
-
+    # Printing and writing to file
     analysis_file = os.path.join('analysis', 'analysis.txt')
     analysis = open(analysis_file, 'w')
-    results = ['Financial Analysis', '----------------------------', f'{totalMonthsResult}', f'{totalAmountResult}', f'{averageChangeResult}'
+    results = [' Financial Analysis', '----------------------------', f'{totalMonthsResult}', f'{totalAmountResult}', f'{averageChangeResult}'
                f'{greatestIncreaseProfit}', f'{greatestDecreaseProfit}' ]
     for result in results:
         print(result)
