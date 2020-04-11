@@ -13,13 +13,14 @@ greatestProfitValue: int = 0
 greatestProfitMonth: str = ''
 greatestLossValue: int = 0
 greatestLossMonth: str = ''
+changeList = []
 csvPath = os.path.join('Resources', 'budget_data.csv')
 
 def sumAmount(value: int):
     global totalValue
     totalValue += value
 
-def findGreatestProfitAndLoss(before: list, after: list):
+def findIncreaseAndDecreaseOfProfit(before: list, after: list):
     global greatestProfitValue
     global greatestProfitMonth
     global greatestLossValue
@@ -32,14 +33,19 @@ def findGreatestProfitAndLoss(before: list, after: list):
     
     if (afterValue - beforeValue) < greatestLossValue:
         greatestLossValue = afterValue - beforeValue
-        greatestLossMonth = before[0]
-    
+        greatestLossMonth = after[0]
+
+def addToChangeList(before: list, after: list):
+    global changeList
+    currentValue = int(before[1])
+    differenceValue = int(after[1])-currentValue
+    changeList.append(differenceValue)
 
 with open(csvPath) as csvFile:
     csvreader = csv.reader(csvFile, delimiter=',')
     # advance csv to skip header
     header = f'Header is: {next(csvreader)}'
-    print(header)
+    # print(header)
     rows = [month for month in csvreader]
     # Use enumerate to get index
     for index, row in enumerate(rows):
@@ -47,19 +53,22 @@ with open(csvPath) as csvFile:
         sumAmount(value)
         # Check so tha index does not go out of bounds
         if index + 1 < len(rows):
-            findGreatestProfitAndLoss(rows[index], rows[index + 1])
+            findIncreaseAndDecreaseOfProfit(rows[index], rows[index + 1])
+            addToChangeList(rows[index], rows[index + 1])
         
     # Create  all string variable before printing and writing to text file
     totalMonthsResult = f'Total Months: {len(rows)}'
     totalAmountResult = f'Total: ${totalValue}'
-    averageChangeResult = f'Average Change: $''%.2f'%((totalValue)/len(rows))
+    averageChangeResult = f'Average Change: $''%.2f'%(sum(changeList, 0)/len(changeList))+'\n'
     greatestIncreaseProfit = f'Greatest Increase in Profits: {greatestProfitMonth} (${greatestProfitValue})'
     greatestDecreaseProfit = f'Greatest Decrease in Profits: {greatestLossMonth} (${greatestLossValue})'
 
     analysis_file = os.path.join('analysis', 'analysis.txt')
     analysis = open(analysis_file, 'w')
-    results = ['Financial Analysis \n', '--------------------------- \n', f'{totalMonthsResult} \n', f'{totalAmountResult} \n', f'{averageChangeResult} \n'
-               f'{greatestIncreaseProfit} \n', f'{greatestDecreaseProfit} \n' ]
-    print(results)
-    # analysis.writelines(results)
+    results = ['Financial Analysis', '----------------------------', f'{totalMonthsResult}', f'{totalAmountResult}', f'{averageChangeResult}'
+               f'{greatestIncreaseProfit}', f'{greatestDecreaseProfit}' ]
+    for result in results:
+        print(result)
+    fileResults = [f'{result}\n 'for result in results ]
+    analysis.writelines(fileResults)
 
