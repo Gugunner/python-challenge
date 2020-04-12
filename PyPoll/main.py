@@ -9,7 +9,7 @@ import csv
 elections = { 'candidates': {} }
 csvPath = os.path.join('Resources', 'election_data.csv')
 
-votes = 0
+totalVotes = 0
 
 def checkForExistingCandidate(name):
     if not name in elections['candidates']:
@@ -19,10 +19,10 @@ def addVotesToCandidate(name):
     votes = elections['candidates'][name]['votes']
     elections['candidates'][name]['votes'] += 1
 
-def addVoteShareOfCandidate(total):
-    for name in elections['candidates']:
-        votes = elections['candidates'][name]['votes']
-        elections['candidates'][name]['voteShare'] = (votes/total) * 100
+def addVoteShareOfCandidate(name):
+    global totalVotes
+    votes = elections['candidates'][name]['votes']
+    elections['candidates'][name]['voteShare'] = (votes/totalVotes) * 100
 
 def checkWinnerCandidate():
     winnerName = ''
@@ -40,16 +40,16 @@ with open(csvPath) as csvFile:
     next(csvreader)
     # get enumerable list to get length of csv
     rows = [vote for vote in csvreader]
-    votes = len(rows)
+    totalVotes = len(rows)
     for row in rows:
         # logic to add names and votes
         checkForExistingCandidate(row[2])
         addVotesToCandidate(row[2])
-# after it's finished get percentage of each candidate
-addVoteShareOfCandidate(votes)
+# after it's finished get percentage of each candidate with a list comprehension
+[addVoteShareOfCandidate(name) for name in elections['candidates']]
 # Create  all string variable before printing and writing to text file
 results = [' Election Results', '------------------------', 
-          f'Total Votes {votes}', '------------------------']
+          f'Total Votes {totalVotes}', '------------------------']
 
 for name in elections['candidates']:
     votesShare = elections['candidates'][name]['voteShare']
