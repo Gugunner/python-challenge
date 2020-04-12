@@ -42,15 +42,18 @@ def addToChangeList(before: list, after: list):
     changeList.append(differenceValue)
 
 with open(csvPath) as csvFile:
+    
     csvreader = csv.reader(csvFile, delimiter=',')
     # advance csv to skip header
     next(csvreader)
-    rows = [month for month in csvreader]
+    
     # Use enumerate to get index
-    for index, row in enumerate(rows):
+    rows = [month for month in csvreader]
+    for(index, row) in enumerate(rows):
         value = int(row[1])
         sumAmount(value)
-        # Check so tha index does not go out of bounds
+
+        # Check so that index does not go out of bounds
         if index + 1 < len(rows):
             findIncreaseAndDecreaseOfProfit(rows[index], rows[index + 1])
             addToChangeList(rows[index], rows[index + 1])
@@ -61,13 +64,16 @@ with open(csvPath) as csvFile:
     averageChangeResult = f'Average Change: $''%.2f'%(sum(changeList, 0)/len(changeList))+'\n '
     greatestIncreaseProfit = f'Greatest Increase in Profits: {greatestProfitMonth} (${greatestProfitValue})'
     greatestDecreaseProfit = f'Greatest Decrease in Profits: {greatestLossMonth} (${greatestLossValue})'
+    results = [' Financial Analysis', '----------------------------', f'{totalMonthsResult}', f'{totalAmountResult}', f'{averageChangeResult}'
+               f'{greatestIncreaseProfit}', f'{greatestDecreaseProfit}' ]
+
     # Printing and writing to file
     analysis_file = os.path.join('analysis', 'analysis.txt')
     analysis = open(analysis_file, 'w')
-    results = [' Financial Analysis', '----------------------------', f'{totalMonthsResult}', f'{totalAmountResult}', f'{averageChangeResult}'
-               f'{greatestIncreaseProfit}', f'{greatestDecreaseProfit}' ]
+    
     for result in results:
         print(result)
+
     fileResults = [f'{result}\n 'for result in results ]
     analysis.writelines(fileResults)
 
